@@ -1,84 +1,60 @@
-package com.example.AddressBook.Service;
+package com.example.addressbook.service;
 
-
-import com.example.AddressBook.DTO.AddressBookDTO;
-import com.example.AddressBook.Interface.AddressBookInterface;
-import com.example.AddressBook.Model.Address;
-import com.example.AddressBook.Repository.AddressBookRepository;
+import com.example.addressbook.dto.AddressBookDTO;
+import com.example.addressbook.interfaces.IAddressBookService;
+import com.example.addressbook.model.AddressBook;
+import com.example.addressbook.repository.AddressBookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class AddressBookService implements AddressBookInterface {
+public class AddressBookService implements IAddressBookService {
 
     @Autowired
     AddressBookRepository addressBookRepository;
 
     @Override
-    public Address addAddress(AddressBookDTO addressBookDTO) throws Exception {
+    public List<AddressBookDTO> getAddressBookData() {
+        List<AddressBook> addressBooksLists = addressBookRepository.findAll();
+        return addressBooksLists.stream()
+                .map(AddressBookDTO::new)
+                .toList();
+    }
 
-        Optional<?> checkformail = addressBookRepository.findByEmail(addressBookDTO.getEmail());
+    @Override
+    public AddressBookDTO getAddressBookDataById(long id) {
+        AddressBook addressBook = addressBookRepository.findById(id).orElseThrow(() -> new RuntimeException("Employee Payroll not found with id: " + id));
+        return new AddressBookDTO(addressBook);
+    }
 
-        if (checkformail.isPresent()){
-            throw new RuntimeException("Email already present");
+    @Override
+    public AddressBookDTO createAddressBookData(AddressBookDTO addressBookDTO) {
+        AddressBook addressBook = addressBookRepository.save(new AddressBook(addressBookDTO));
+        return new AddressBookDTO(addressBook);
+    }
+
+    @Override
+    public boolean updateAddressBookData(long id, AddressBookDTO updatedAddressBookDTO) {
+        try {
+            AddressBook addressBook = addressBookRepository.findById(id).orElseThrow(() -> new RuntimeException("Employee Payroll not found with id: " + id));
+            addressBook.setName(updatedAddressBookDTO.getName());
+            addressBook.setAddress(updatedAddressBookDTO.getAddress());
+            addressBook.setPhoneNumber(updatedAddressBookDTO.getPhoneNumber());
+            addressBookRepository.save(addressBook);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-
-        Address temp = new Address();
-        temp.setAddress(addressBookDTO.getAddress());
-        temp.setName(addressBookDTO.getName());
-        temp.setEmail(addressBookDTO.getEmail());
-        temp.setPhoneNumber(addressBookDTO.getPhoneNumber());
-        return addressBookRepository.save(temp);
     }
 
     @Override
-    public void deleteAddress(Long ID) {
-         addressBookRepository.deleteById(ID);
-    }
-
-    @Override
-    public Address updateAddress(Long Id, AddressBookDTO addressBookDTO) throws Exception {
-        Address existingAddress = addressBookRepository.findById(Id)
-                .orElseThrow(() -> new RuntimeException("Contact not found with id " + Id));
-
-        if (!existingAddress.getEmail().equals(addressBookDTO.getEmail()) &&
-                addressBookRepository.findByEmail(addressBookDTO.getEmail()).isPresent()) {
-            throw new RuntimeException("Duplicate contact with email: " + addressBookDTO.getEmail());
+    public void deleteAddressBookData(long id) {
+        try {
+            addressBookRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Employee Payroll not found with id: " + id);
         }
-
-        if (!existingAddress.getPhoneNumber().equals(addressBookDTO.getPhoneNumber()) &&
-                addressBookRepository.findByPhoneNumber(addressBookDTO.getPhoneNumber()).isPresent()) {
-            throw new RuntimeException("Duplicate contact with phone number: " + addressBookDTO.getPhoneNumber());
-        }
-
-        existingAddress.setName(addressBookDTO.getName());
-        existingAddress.setEmail(addressBookDTO.getEmail());
-        existingAddress.setPhoneNumber(addressBookDTO.getPhoneNumber());
-        existingAddress.setAddress(addressBookDTO.getAddress());
-
-        return addressBookRepository.save(existingAddress);
-    }
-
-    @Override
-    public List<Address> getAllContacts() {
-        return addressBookRepository.findAll();
-    }
-
-    @Override
-    public Optional<Address> getContactById(Long id) {
-        return addressBookRepository.findById(id);
-    }
-
-    @Override
-    public Optional<Address> getContactByEmail(String email) {
-        return addressBookRepository.findByEmail(email);
-    }
-
-    @Override
-    public Optional<Address> getContactByPhoneNumber(String phoneNumber) {
-        return addressBookRepository.findByPhoneNumber(phoneNumber);
     }
 }

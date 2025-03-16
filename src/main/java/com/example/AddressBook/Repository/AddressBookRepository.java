@@ -1,14 +1,9 @@
-package com.example.AddressBook.Repository;
+package com.example.addressbook.repository;
 
-import com.example.AddressBook.Model.Address;
+import com.example.addressbook.model.AddressBook;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
-public interface AddressBookRepository extends JpaRepository<Address,Long> {
-    Optional<Address> findByEmail(String email);
-    Optional<Address> findByPhoneNumber(String PhoneNumber);
-
+public interface AddressBookRepository extends JpaRepository<AddressBook, Long> {
 }

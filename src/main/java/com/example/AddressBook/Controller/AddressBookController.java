@@ -1,87 +1,80 @@
-package com.example.AddressBook.Controller;
+package com.example.addressbook.controller;
 
-
-import com.example.AddressBook.DTO.AddressBookDTO;
-import com.example.AddressBook.Model.Address;
-import com.example.AddressBook.Service.AddressBookService;
+import com.example.addressbook.dto.AddressBookDTO;
+import com.example.addressbook.dto.ResponseDTO;
+import com.example.addressbook.interfaces.IAddressBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/address")
+@RequestMapping("/address-book")
 public class AddressBookController {
 
     @Autowired
-    AddressBookService addressBookService;
+    IAddressBookService addressBookService;
 
-    @GetMapping("")
-    public String intialmessage(){
-        return "Welcome to the Address Book!!";
+    @GetMapping("/api/test")
+    public String test() {
+        return "Test Successful! Welcome to Address Book Application";
     }
 
-
-    //add the Address in the book
-    @PostMapping("/add")
-    public ResponseEntity<String> addAddress(@RequestBody AddressBookDTO addressBookDTO) {
+    @RequestMapping({"", "/", "/get"})
+    public ResponseEntity<ResponseDTO<?>> getAllAddressBook() {
         try {
-            addressBookService.addAddress(addressBookDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Contact added successfully!");
+            List<AddressBookDTO> addressBookData = addressBookService.getAddressBookData();
+            return new ResponseEntity<>(new ResponseDTO<List<AddressBookDTO>>("Get All Employees Payroll Data", addressBookData), HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return new ResponseEntity<>(new ResponseDTO<String>("Get Call Unsuccessful", e.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
 
-    // Update a Addresss
-    @PutMapping("update/{id}")
-    public ResponseEntity<String> updateContact(@PathVariable Long id, @RequestBody AddressBookDTO addressBookDTO) {
+    @GetMapping("/get/{id}")
+    public ResponseEntity<ResponseDTO<?>> getContactById(@PathVariable Long id) {
         try {
-            addressBookService.updateAddress(id, addressBookDTO);
-            return ResponseEntity.ok("Contact updated successfully!");
+            AddressBookDTO addressBook = addressBookService.getAddressBookDataById(id);
+            return new ResponseEntity<>(new ResponseDTO<AddressBookDTO>("Get Call for ID Successful", addressBook), HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return new ResponseEntity<>(new ResponseDTO<String>("Get Call for ID Unsuccessful", e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ResponseDTO<?>> addInAddressBook(@RequestBody AddressBookDTO AddressBookDTO) {
+        try {
+            AddressBookDTO newAddressBook = addressBookService.createAddressBookData(AddressBookDTO);
+            return new ResponseEntity<>(new ResponseDTO<AddressBookDTO>("Create New Employee Payroll Data", newAddressBook), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseDTO<AddressBookDTO>("Create New Employee Payroll Data", new AddressBookDTO()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ResponseDTO<?>> updateAddressBook(@PathVariable Long id, @RequestBody AddressBookDTO updatedAddressBook) {
+        try {
+            AddressBookDTO addressBook = addressBookService.getAddressBookDataById(id);
+            boolean operation = addressBookService.updateAddressBookData(id, updatedAddressBook);
+            if(!operation)
+                return new ResponseEntity<>(new ResponseDTO<AddressBookDTO>("Update Failed", addressBook), HttpStatus.NOT_MODIFIED);
+            return new ResponseEntity<>(new ResponseDTO<AddressBookDTO>("Updated Employee Payroll Data for:" + addressBook + "to below Data ", updatedAddressBook), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseDTO<AddressBookDTO>("Update Failed", new AddressBookDTO()), HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteAddress(@PathVariable Long id){
-        addressBookService.deleteAddress(id);
-        return ResponseEntity.ok("Address Deleted Successfully");
-    }
-
-
-    // Get all Adddresss
-    @GetMapping("/all")
-    public ResponseEntity<List<Address>> getAllContacts() {
-        List<Address> contacts = addressBookService.getAllContacts();
-        return ResponseEntity.ok(contacts);
-    }
-
-    // Get a address by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Address> getContactById(@PathVariable Long id) {
-        Optional<Address> contact = addressBookService.getContactById(id);
-        return contact.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
-
-    // Get a address by email
-    @GetMapping("/email/{email}")
-    public ResponseEntity<Address> getContactByEmail(@PathVariable String email) {
-        Optional<Address> contact = addressBookService.getContactByEmail(email);
-        return contact.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
-
-    // Get a address by phone number
-    @GetMapping("/phone/{phoneNumber}")
-    public ResponseEntity<Address> getContactByPhoneNumber(@PathVariable String phoneNumber) {
-        Optional<Address> contact = addressBookService.getContactByPhoneNumber(phoneNumber);
-        return contact.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<ResponseDTO<?>> deleteAddressBook(@PathVariable Long id) {
+        try {
+            AddressBookDTO addressBook = addressBookService.getAddressBookDataById(id);
+            addressBookService.deleteAddressBookData(id);
+            return new ResponseEntity<>(new ResponseDTO<AddressBookDTO>("Deleted Employee Payroll Data for id: " + id, addressBook), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(new ResponseDTO<AddressBookDTO>("Employee Payroll Data for id " + id + " is not found", new AddressBookDTO()), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseDTO<AddressBookDTO>("Error Deleting Employee Payroll Data for id: " + id, new AddressBookDTO()), HttpStatus.NOT_FOUND);
+        }
     }
 }
