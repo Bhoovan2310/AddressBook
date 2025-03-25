@@ -1,4 +1,4 @@
-package com.example.addressbook.dto;
+package com.example.AddressBook.DTO;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;

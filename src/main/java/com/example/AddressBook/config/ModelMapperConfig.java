@@ -1,4 +1,4 @@
-package com.example.addressbook.config;
+package com.example.AddressBook.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

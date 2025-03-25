@@ -1,6 +1,6 @@
-package com.example.addressbook.interfaces;
+package com.example.AddressBook.interfaces;
 
-import com.example.addressbook.dto.AddressBookDTO;
+import com.example.AddressBook.DTO.AddressBookDTO;
 
 import java.util.List;
 

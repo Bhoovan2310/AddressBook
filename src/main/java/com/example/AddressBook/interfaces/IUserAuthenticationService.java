@@ -1,8 +1,8 @@
-package com.example.addressbook.interfaces;
+package com.example.AddressBook.interfaces;
 
-import com.example.addressbook.dto.UserAuthenticationDTO;
-import com.example.addressbook.dto.LoginDTO;
-import com.example.addressbook.exception.UserException;
+import com.example.AddressBook.DTO.UserAuthenticationDTO;
+import com.example.AddressBook.DTO.LoginDTO;
+import com.example.AddressBook.exception.UserException;
 
 /**
  * Interface for User Authentication Service.

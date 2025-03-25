@@ -1,102 +1,93 @@
-package com.example.addressbook.service;
+package com.example.AddressBook.Service;
 
-import com.example.addressbook.dto.AddressBookDTO;
-import com.example.addressbook.interfaces.IAddressBookService;
-import com.example.addressbook.model.AddressBook;
-import com.example.addressbook.repository.AddressBookRepository;
-import org.modelmapper.ModelMapper;
+
+import com.example.AddressBook.DTO.AddressBookDTO;
+import com.example.AddressBook.Interface.AddressBookInterface;
+import com.example.AddressBook.Model.Address;
+import com.example.AddressBook.Model.User;
+import com.example.AddressBook.Repository.AddressBookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
-/**
- * AddressBookService class implements IAddressBookService interface
- * and provides the implementation for the methods defined in the interface.
- */
 @Service
-public class AddressBookService implements IAddressBookService {
+public class AddressBookService implements AddressBookInterface {
 
     @Autowired
-    AddressBookRepository addressBookRepository;    // Injecting AddressBookRepository to perform CRUD operations
+    AddressBookRepository addressBookRepository;
 
-    ModelMapper modelMapper = new ModelMapper();    // ModelMapper to map DTOs to entities and vice versa
+    static final String ADDRESS_CACHE = "addresses";
 
-    /**
-     * This method retrieves all address book entries from the database.
-     * It maps each AddressBook entity to AddressBookDTO and returns a list of AddressBookDTO.
-     *
-     * @return List<AddressBookDTO> - List of AddressBookDTO
-     */
+
     @Override
-    public List<AddressBookDTO> getAddressBookData() {
-        List<AddressBook> addressBooksLists = addressBookRepository.findAll();
-        return addressBooksLists.stream()
-                .map(addressBook -> modelMapper.map(addressBook, AddressBookDTO.class))
-                .toList();
-    }
+    public Address addAddress(AddressBookDTO addressBookDTO , User user) throws Exception {
 
-    /**
-     * This method retrieves a specific address book entry by its ID.
-     * It maps the AddressBook entity to AddressBookDTO and returns it.
-     *
-     * @param id - The ID of the address book entry
-     * @return AddressBookDTO - The address book entry with the specified ID
-     */
-    @Override
-    public AddressBookDTO getAddressBookDataById(long id) {
-        AddressBook addressBook = addressBookRepository.findById(id).orElseThrow(() -> new RuntimeException("Employee Payroll not found with id: " + id));
-        return modelMapper.map(addressBook, AddressBookDTO.class);
-    }
+        Optional<?> checkformail = addressBookRepository.findByEmail(addressBookDTO.getEmail());
 
-    /**
-     * This method creates a new address book entry.
-     * It maps the AddressBookDTO to AddressBook entity and saves it to the database.
-     *
-     * @param addressBookDTO - The address book entry to be created
-     * @return AddressBookDTO - The created address book entry
-     */
-    @Override
-    public AddressBookDTO createAddressBookData(AddressBookDTO addressBookDTO) {
-        AddressBook addressBook = addressBookRepository.save(modelMapper.map(addressBookDTO, AddressBook.class));
-        return modelMapper.map(addressBook, AddressBookDTO.class);
-    }
-
-    /**
-     * This method updates an existing address book entry.
-     * It retrieves the entry by its ID, updates its fields, and saves it to the database.
-     *
-     * @param id - The ID of the address book entry to be updated
-     * @param updatedAddressBookDTO - The updated address book entry
-     * @return boolean - true if the update was successful, false otherwise
-     */
-    @Override
-    public boolean updateAddressBookData(long id, AddressBookDTO updatedAddressBookDTO) {
-        try {
-            AddressBook addressBook = addressBookRepository.findById(id).orElseThrow(() -> new RuntimeException("Employee Payroll not found with id: " + id));
-            addressBook.setFirstName(updatedAddressBookDTO.getFirstName());
-            addressBook.setLastName(updatedAddressBookDTO.getLastName());
-            addressBook.setAddress(updatedAddressBookDTO.getAddress());
-            addressBook.setPhoneNumber(updatedAddressBookDTO.getPhoneNumber());
-            addressBookRepository.save(addressBook);
-            return true;
-        } catch (Exception e) {
-            return false;
+        if (checkformail.isPresent()){
+            throw new RuntimeException("Email already present");
         }
+
+        Address temp = new Address();
+        temp.setAddress(addressBookDTO.getAddress());
+        temp.setName(addressBookDTO.getName());
+        temp.setEmail(addressBookDTO.getEmail());
+        temp.setPhoneNumber(addressBookDTO.getPhoneNumber());
+        temp.setUser(user);
+        return addressBookRepository.save(temp);
     }
 
-    /**
-     * This method deletes an address book entry by its ID.
-     * It throws an exception if the entry is not found.
-     *
-     * @param id - The ID of the address book entry to be deleted
-     */
     @Override
-    public void deleteAddressBookData(long id) {
-        try {
-            addressBookRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Employee Payroll not found with id: " + id);
+    public void deleteAddress(Long ID) {
+        addressBookRepository.deleteById(ID);
+    }
+
+    @Override
+    public Address updateAddress(Long Id, AddressBookDTO addressBookDTO) throws Exception {
+        Address existingAddress = addressBookRepository.findById(Id)
+                .orElseThrow(() -> new RuntimeException("Contact not found with id " + Id));
+
+        if (!existingAddress.getEmail().equals(addressBookDTO.getEmail()) &&
+                addressBookRepository.findByEmail(addressBookDTO.getEmail()).isPresent()) {
+            throw new RuntimeException("Duplicate contact with email: " + addressBookDTO.getEmail());
         }
+
+        if (!existingAddress.getPhoneNumber().equals(addressBookDTO.getPhoneNumber()) &&
+                addressBookRepository.findByPhoneNumber(addressBookDTO.getPhoneNumber()).isPresent()) {
+            throw new RuntimeException("Duplicate contact with phone number: " + addressBookDTO.getPhoneNumber());
+        }
+
+        existingAddress.setName(addressBookDTO.getName());
+        existingAddress.setEmail(addressBookDTO.getEmail());
+        existingAddress.setPhoneNumber(addressBookDTO.getPhoneNumber());
+        existingAddress.setAddress(addressBookDTO.getAddress());
+
+        return addressBookRepository.save(existingAddress);
+    }
+
+    @Override
+    public List<Address> getAllContacts() {
+        return addressBookRepository.findAll();
+    }
+
+    @Override
+
+    public Optional<Address> getContactById(Long id) {
+        return addressBookRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Address> getContactByEmail(String email) {
+        return addressBookRepository.findByEmail(email);
+    }
+
+    @Override
+    public Optional<Address> getContactByPhoneNumber(String phoneNumber) {
+        return addressBookRepository.findByPhoneNumber(phoneNumber);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.addressbook.dto;
+package com.example.AddressBook.DTO;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

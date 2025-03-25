@@ -1,4 +1,4 @@
-package com.example.addressbook.util;
+package com.example.AddressBook.util;
 
 import org.springframework.stereotype.Component;
 import java.util.UUID;

@@ -1,15 +1,15 @@
-package com.example.addressbook.controller;
+package com.example.AddressBook.Controller;
 
-import com.example.addressbook.interfaces.IUserAuthenticationService;
+import com.example.AddressBook.interfaces.IUserAuthenticationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.addressbook.dto.*;
-import com.example.addressbook.exception.UserException;
-import com.example.addressbook.dto.UserAuthenticationDTO;
+import com.example.AddressBook.DTO.*;
+import com.example.AddressBook.exception.UserException;
+import com.example.AddressBook.DTO.UserAuthenticationDTO;
 
 /**
  * Controller for User Authentication operations.

@@ -1,13 +1,14 @@
-package com.example.addressbook.repository;
+package com.example.AddressBook.Repository;
 
-import com.example.addressbook.model.AddressBook;
+import com.example.AddressBook.Model.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-/**
- * AddressBookRepository is an interface that extends JpaRepository to provide CRUD operations for AddressBook entities.
- * It allows for easy interaction with the database without the need for boilerplate code.
- */
+import java.util.Optional;
+
 @Repository
-public interface AddressBookRepository extends JpaRepository<AddressBook, Long> {
+public interface AddressBookRepository extends JpaRepository<Address,Long> {
+    Optional<Address> findByEmail(String email);
+    Optional<Address> findByPhoneNumber(String PhoneNumber);
+
 }

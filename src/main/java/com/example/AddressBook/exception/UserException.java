@@ -1,4 +1,4 @@
-package com.example.addressbook.exception;
+package com.example.AddressBook.exception;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

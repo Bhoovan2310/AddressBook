@@ -1,4 +1,4 @@
-package com.example.addressbook.model;
+package com.example.AddressBook.Model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

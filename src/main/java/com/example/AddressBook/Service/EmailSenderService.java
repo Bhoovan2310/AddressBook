@@ -1,4 +1,4 @@
-package com.example.addressbook.service;
+package com.example.AddressBook.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

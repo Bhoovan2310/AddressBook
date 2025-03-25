@@ -1,10 +1,10 @@
-package com.example.addressbook.model;
+package com.example.AddressBook.Model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.example.addressbook.dto.UserAuthenticationDTO;
+import com.example.AddressBook.DTO.UserAuthenticationDTO;
 
 /**
  * UserAuthentication class represents the user entity in the database.

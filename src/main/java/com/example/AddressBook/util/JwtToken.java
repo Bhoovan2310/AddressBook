@@ -1,4 +1,4 @@
-package com.example.addressbook.util;
+package com.example.AddressBook.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

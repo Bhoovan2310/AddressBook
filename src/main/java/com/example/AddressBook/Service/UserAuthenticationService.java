@@ -1,13 +1,13 @@
-package com.example.addressbook.service;
+package com.example.AddressBook.Service;
 
-import com.example.addressbook.dto.LoginDTO;
-import com.example.addressbook.dto.UserAuthenticationDTO;
-import com.example.addressbook.exception.UserException;
-import com.example.addressbook.interfaces.IUserAuthenticationService;
-import com.example.addressbook.model.UserAuthentication;
-import com.example.addressbook.repository.UserAuthenticationRepository;
-import com.example.addressbook.util.JwtToken;
-import com.example.addressbook.util.ResetToken;
+import com.example.AddressBook.DTO.LoginDTO;
+import com.example.AddressBook.DTO.UserAuthenticationDTO;
+import com.example.AddressBook.exception.UserException;
+import com.example.AddressBook.interfaces.IUserAuthenticationService;
+import com.example.AddressBook.Model.UserAuthentication;
+import com.example.AddressBook.Repository.UserAuthenticationRepository;
+import com.example.AddressBook.util.JwtToken;
+import com.example.AddressBook.util.ResetToken;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,4 +1,4 @@
-package com.example.addressbook.dto;
+package com.example.AddressBook.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
