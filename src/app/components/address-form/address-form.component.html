@@ -1,0 +1,32 @@
+
+<form *ngIf="selectedAddress" (ngSubmit)="save()" class="form-container">
+  <div class="form-header">
+    <h2>PERSON ADDRESS FORM</h2>
+    <button type="button" class="close-btn" (click)="closeForm()">✖</button>
+  </div>
+
+  <div class="form-group">
+    <label for="name">Full Name</label>
+    <input type="text" id="name" [(ngModel)]="selectedAddress.name" name="name" required>
+  </div>
+
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" id="email" [(ngModel)]="selectedAddress.email" name="email" required>
+  </div>
+
+  <div class="form-group">
+    <label for="phoneNumber">Phone Number</label>
+    <input type="text" id="phoneNumber" [(ngModel)]="selectedAddress.phoneNumber" name="phoneNumber">
+  </div>
+
+  <div class="form-group">
+    <label for="address">Address</label>
+    <textarea id="address" [(ngModel)]="selectedAddress.address" name="address"></textarea>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn primary">Save</button>
+    <button type="button" (click)="closeForm()" class="btn secondary">Cancel</button>
+  </div>
+</form>

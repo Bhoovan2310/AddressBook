@@ -1,0 +1,45 @@
+<div class="container">
+  <header class="header">
+    <div class="logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/5439/5439135.png" alt="Address Book Logo">
+      <h1>ADDRESS BOOK</h1>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="title-bar">
+      <h2>Person Details</h2>
+      <button class="add-btn" (click)="addNewAddress()">➕ Add Person</button>
+    </div>
+
+    <table class="address-table">
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th>Address</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let address of addresses">
+          <td>{{ address.name }}</td>
+          <td>{{ address.email }}</td>
+          <td>{{ address.phoneNumber ? address.phoneNumber : 'N/A' }}</td>
+          <td>{{ address.address ? address.address : 'N/A' }}</td>
+          <td class="action-buttons">
+            <button class="edit-btn" (click)="editAddress(address)">✏</button>
+            <button class="delete-btn" (click)="deletePerson(address.id)">🗑</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <app-address-form
+    *ngIf="showForm"
+    [selectedAddress]="selectedAddress"
+    (close)="closeForm()">
+  </app-address-form>
+</div>
